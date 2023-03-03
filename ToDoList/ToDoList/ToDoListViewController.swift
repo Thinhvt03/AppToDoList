@@ -20,6 +20,7 @@ class ToDoListViewController: UIViewController {
     
     let reuseIdentifier = "ToDoCell"
     var titleButton = "Edit"
+    var editingIndex: Int = 1
     
     var action: Action = .none {
         didSet {
@@ -57,7 +58,9 @@ class ToDoListViewController: UIViewController {
                 let lastIndex = IndexPath(row: todos.count, section: 0)
                 tableView.deleteRows(at: [lastIndex], with: .automatic)
             default:
+                
                 print("no handle")
+                
             }
         }
     }
@@ -100,50 +103,99 @@ class ToDoListViewController: UIViewController {
       
     // Edit Button
     private func setupEditButton() {
-        let editButton = UIBarButtonItem(title: titleButton, style: .plain, target: self, action: #selector(editButtonDidTap))
+        let editButton = UIBarButtonItem(title: titleButton, style: .plain, target: self, action: nil)
+        
+        guard let todos = fetchResultsController.fetchedObjects else {return}
+        if todos.isEmpty && checked == false {
+                editButton.tintColor = .gray
+        } else if action == .editing  {
+            editButton.title = "Done"
+            editButton.action = #selector(editButtonDidTap)
+        } else {
+            editButton.action = #selector(editButtonDidTap)
+        }
+        
         navigationItem.rightBarButtonItem = editButton
     }
     
     // Delete Button
     private func setupDeleteButton() {
-        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deleteButtonDidTap))
+        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: nil)
+        
+        guard let todos = fetchResultsController.fetchedObjects else {return}
+        if todos.isEmpty {
+            deleteButton.action = nil
+            deleteButton.tintColor = .gray
+        } else{
+            deleteButton.action = #selector(deleteButtonDidTap)
+        }
+        
         navigationItem.leftBarButtonItem = deleteButton
     }
     
+    // action tap in tableView
     @objc private func tableViewDidTap() {
+        let index = IndexPath(row: editingIndex, section: 0)
+        let cell = tableView.cellForRow(at: index) as! ToDoCell
+        
         if action == .adding {
-            let todos = fetchResultsController.fetchedObjects!
-            let index = IndexPath(row: todos.count, section: 0)
-            let cell = tableView.cellForRow(at: index) as! ToDoCell
             if let text = cell.textView.text, !text.isEmpty {
-                DataHandler.insertNameOfTask(todoName: text )
+                DataHandler.insertNameOfTask(todoName: text, index: Int32(cell.index) )
+            }
+        } else if action == .editing  {
+            let index = IndexPath(row: editingIndex, section: 0)
+            let todo = fetchResultsController.object(at: index)
+            todo.todoname = cell.textView.text
+            
+            do {
+                try AppDelegate.managedObjectContext.save()
+            } catch {
+                print("Error Occured: \(error.localizedDescription)")
             }
         }
+        
+        action = .none
+        checked.toggle()
+        setupEditButton()
+        print(checked)
+        
+        
+    }
+    
+    // action tap in Edit button
+    @objc private func editButtonDidTap() {
+        
+        if action == .none {
+            tableView.isEditing.toggle()
+            checked.toggle()
+            setupEditButton()
+        } else {
+            tableViewDidTap()
+          }
         do {
             try AppDelegate.managedObjectContext.save()
         } catch {
             print("Error Occured: \(error.localizedDescription)")
         }
+        
         action = .none
     }
     
-    @objc private func editButtonDidTap() {
-        tableView.isEditing.toggle()
-        checked.toggle()
-        setupEditButton()
-    }
-    
+    // action tap in Delete button
     @objc private func deleteButtonDidTap() {
         let alert = UIAlertController(title: nil, message: "Do you to delete all task?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Delete", style: .default, handler: {[weak self]_ in
             guard let strongSelf = self else {return}
                 DataHandler.deleteFetch()
                 strongSelf.tableView.reloadData()
+                
+                strongSelf.setupEditButton()
+                strongSelf.setupDeleteButton()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(alert, animated: true)
-        
     }
+    
 }
 
 // MARK: - TableView DataSource
@@ -164,16 +216,27 @@ extension ToDoListViewController: UITableViewDataSource {
         cell.delegate = self
         cell.index = indexPath.row
         let todos = fetchResultsController.fetchedObjects
+        
         if indexPath.row < todos!.count {
             let todo = fetchResultsController.object(at: indexPath)
-            cell.todo = todo
             cell.textView.text = todo.todoname
             cell.isDone = todo.isDone
+            cell.backgroundColor = todo.color
         } else {
             cell.textView.text = nil
             cell.style = action == .none ? .add : .todo
         }
         return cell
+    }
+    
+    // set location to be edited
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        let todos = fetchResultsController.fetchedObjects!
+        if indexPath.row == todos.count {
+            return false
+        } else {
+            return true
+        }
     }
 }
 
@@ -181,7 +244,10 @@ extension ToDoListViewController: UITableViewDataSource {
 
 extension ToDoListViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return !checked
+        if action == .none {
+            return false
+        }
+       return true
     }
 }
 
@@ -194,8 +260,10 @@ extension ToDoListViewController: ToDoCellDelegate {
     }
     
     func todoCellBeginEditing(_ cell: ToDoCell) {
+        editingIndex = cell.index
+        checked.toggle()
+        setupEditButton()
         guard let todos = fetchResultsController.fetchedObjects else {return}
-        
         action = cell.index == todos.count ? .adding : .editing
     }
     
@@ -206,29 +274,62 @@ extension ToDoListViewController: ToDoCellDelegate {
     
     func todoCellEndEditing(_ cell: ToDoCell) {
         let todos = fetchResultsController.fetchedObjects!
-        print("endediting: \(String(describing: cell.index))" )
+        
         if cell.index < todos.count {
             // Edit
-            let index = IndexPath(row: cell.index, section: 0)
+            let index = IndexPath(row: editingIndex, section: 0)
             let todo = fetchResultsController.object(at: index)
             todo.todoname = cell.textView.text
-           
+            do {
+                try AppDelegate.managedObjectContext.save()
+            } catch {
+                print("Error Occured: \(error.localizedDescription)")
+            }
+            action = .none
+            
         } else if let text = cell.textView.text, !text.isEmpty {
-            // Add
-            DataHandler.insertNameOfTask(todoName: text )
-        }
-        do {
-            try AppDelegate.managedObjectContext.save()
-        } catch {
-            print("Error Occured: \(error.localizedDescription)")
-        }
-        action = .none
+                // Add
+            DataHandler.insertNameOfTask(todoName: text, index: Int32(editingIndex) )
+                
+                action = .none
+                action = .adding
+                cell.textView.becomeFirstResponder()
+                
+            } else {
+                action = .none
+            }
+        
+        checked.toggle()
+        setupEditButton()
+        setupDeleteButton()
+    
     }
     
     func checkmarkButtonDidTap(_ cell: ToDoCell) {
-        let addIndex = IndexPath(row: cell.index, section: 0)
-        let todoAtRow = fetchResultsController.object(at: addIndex)
-        todoAtRow.isDone = cell.isDone
+        if !cell.textView.text.isEmpty {
+            let addIndex = IndexPath(row: cell.index, section: 0)
+            let todoAtRow = fetchResultsController.object(at: addIndex)
+            todoAtRow.isDone = cell.isDone
+        } else {
+            checked.toggle()
+            setupEditButton()
+        }
+            do {
+                try AppDelegate.managedObjectContext.save()
+            } catch {
+                print("Error Occured: \(error.localizedDescription)")
+            }
+        action = .none
+    }
+    
+    func todoCellDidSwipeRight(_ cell: ToDoCell) {
+        
+        let index = IndexPath(row: cell.index, section: 0)
+        let todos = fetchResultsController.object(at: index)
+        let hexColor = ["FFCCFF", "FFFFFF", "FFFF99", "99FFFF", "CC99FF","9999CC", "FFCC99","99FFFF"].randomElement()
+            cell.backgroundColor = UIColor(hex: hexColor!)
+        todos.color = cell.backgroundColor
+        
         do {
             try AppDelegate.managedObjectContext.save()
         } catch {
@@ -250,19 +351,30 @@ extension ToDoListViewController: NSFetchedResultsControllerDelegate {
              } catch {
                  print("Error Occured: \(error.localizedDescription)")
              }
+            setupEditButton()
+            setupDeleteButton()
+            action = .none
          }
     }
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        var todos = fetchResultsController.fetchedObjects!
-        let todo = todos.remove(at: sourceIndexPath.row)
-        todos.insert(todo, at: destinationIndexPath.row)
-        do {
-            try AppDelegate.managedObjectContext.save()
-        } catch {
-            print("Error Occured: \(error.localizedDescription)")
-        }
+        let count = fetchResultsController.fetchedObjects?.count ?? 0
+        var array: [Int] = []
+                for i in 0..<count {
+                    array.append(i)
+                }
+                
+                let newElement = array.remove(at: sourceIndexPath.row)
+                array.insert(newElement, at: destinationIndexPath.row)
+                
+                for i in 0..<count {
+                    let task = fetchResultsController.object(at: IndexPath(row: i, section: 0))
+                    
+                    let newPosition = array.firstIndex(of: i)!
+                    task.index = Int32(newPosition)
+                }
     }
+    
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         switch type {
         case .insert:
@@ -276,9 +388,13 @@ extension ToDoListViewController: NSFetchedResultsControllerDelegate {
             }
             break
         case .move:
-            tableView.moveRow(at: indexPath!, to: newIndexPath!)
+            print("move")
+            if let indexPath = indexPath {
+                tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
             break
         case .update:
+            print("update")
             if let indexPath = indexPath {
                 tableView.reloadRows(at: [indexPath], with: .automatic)
             }

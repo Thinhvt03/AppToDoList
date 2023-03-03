@@ -14,11 +14,12 @@
 		F04DC3C229ACF24600AFE6C3 /* ToDoList.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F04DC3C029ACF24600AFE6C3 /* ToDoList.xcdatamodeld */; };
 		F04DC3C429ACF24800AFE6C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F04DC3C329ACF24800AFE6C3 /* Assets.xcassets */; };
 		F04DC3C729ACF24800AFE6C3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F04DC3C529ACF24800AFE6C3 /* LaunchScreen.storyboard */; };
-		F04DC3D429ACF39100AFE6C3 /* ToDoList+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DC3D229ACF39100AFE6C3 /* ToDoList+CoreDataClass.swift */; };
-		F04DC3D529ACF39100AFE6C3 /* ToDoList+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DC3D329ACF39100AFE6C3 /* ToDoList+CoreDataProperties.swift */; };
 		F04DC3D729ACF44700AFE6C3 /* ToDoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DC3D629ACF44700AFE6C3 /* ToDoCell.swift */; };
 		F04DC3D929ACF57400AFE6C3 /* DataHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DC3D829ACF57400AFE6C3 /* DataHandler.swift */; };
 		F04DC3DB29AE11D800AFE6C3 /* Keyboard-ToDo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DC3DA29AE11D800AFE6C3 /* Keyboard-ToDo.swift */; };
+		F080B20829AF34C500492DB6 /* ToDoList+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F080B20629AF34C500492DB6 /* ToDoList+CoreDataClass.swift */; };
+		F080B20929AF34C500492DB6 /* ToDoList+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F080B20729AF34C500492DB6 /* ToDoList+CoreDataProperties.swift */; };
+		F080B23429AF8C1700492DB6 /* Extension - Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = F080B23329AF8C1700492DB6 /* Extension - Color.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,11 +32,12 @@
 		F04DC3C329ACF24800AFE6C3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F04DC3C629ACF24800AFE6C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F04DC3C829ACF24800AFE6C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F04DC3D229ACF39100AFE6C3 /* ToDoList+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToDoList+CoreDataClass.swift"; sourceTree = "<group>"; };
-		F04DC3D329ACF39100AFE6C3 /* ToDoList+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToDoList+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F04DC3D629ACF44700AFE6C3 /* ToDoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoCell.swift; sourceTree = "<group>"; };
 		F04DC3D829ACF57400AFE6C3 /* DataHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataHandler.swift; sourceTree = "<group>"; };
 		F04DC3DA29AE11D800AFE6C3 /* Keyboard-ToDo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keyboard-ToDo.swift"; sourceTree = "<group>"; };
+		F080B20629AF34C500492DB6 /* ToDoList+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToDoList+CoreDataClass.swift"; sourceTree = "<group>"; };
+		F080B20729AF34C500492DB6 /* ToDoList+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToDoList+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		F080B23329AF8C1700492DB6 /* Extension - Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension - Color.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,8 +54,6 @@
 		F04DC3AB29ACF24600AFE6C3 = {
 			isa = PBXGroup;
 			children = (
-				F04DC3D229ACF39100AFE6C3 /* ToDoList+CoreDataClass.swift */,
-				F04DC3D329ACF39100AFE6C3 /* ToDoList+CoreDataProperties.swift */,
 				F04DC3B629ACF24600AFE6C3 /* ToDoList */,
 				F04DC3B529ACF24600AFE6C3 /* Products */,
 			);
@@ -74,15 +74,26 @@
 				F04DC3B929ACF24600AFE6C3 /* SceneDelegate.swift */,
 				F04DC3BB29ACF24600AFE6C3 /* ToDoListViewController.swift */,
 				F04DC3DA29AE11D800AFE6C3 /* Keyboard-ToDo.swift */,
+				F080B23329AF8C1700492DB6 /* Extension - Color.swift */,
 				F04DC3D829ACF57400AFE6C3 /* DataHandler.swift */,
 				F04DC3D629ACF44700AFE6C3 /* ToDoCell.swift */,
 				F04DC3BD29ACF24600AFE6C3 /* Main.storyboard */,
 				F04DC3C329ACF24800AFE6C3 /* Assets.xcassets */,
 				F04DC3C529ACF24800AFE6C3 /* LaunchScreen.storyboard */,
 				F04DC3C829ACF24800AFE6C3 /* Info.plist */,
-				F04DC3C029ACF24600AFE6C3 /* ToDoList.xcdatamodeld */,
+				F080B23529B03D4E00492DB6 /* Core Data */,
 			);
 			path = ToDoList;
+			sourceTree = "<group>";
+		};
+		F080B23529B03D4E00492DB6 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				F04DC3C029ACF24600AFE6C3 /* ToDoList.xcdatamodeld */,
+				F080B20729AF34C500492DB6 /* ToDoList+CoreDataProperties.swift */,
+				F080B20629AF34C500492DB6 /* ToDoList+CoreDataClass.swift */,
+			);
+			path = "Core Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,14 +168,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				F04DC3BC29ACF24600AFE6C3 /* ToDoListViewController.swift in Sources */,
-				F04DC3D429ACF39100AFE6C3 /* ToDoList+CoreDataClass.swift in Sources */,
 				F04DC3D729ACF44700AFE6C3 /* ToDoCell.swift in Sources */,
 				F04DC3DB29AE11D800AFE6C3 /* Keyboard-ToDo.swift in Sources */,
 				F04DC3B829ACF24600AFE6C3 /* AppDelegate.swift in Sources */,
 				F04DC3D929ACF57400AFE6C3 /* DataHandler.swift in Sources */,
+				F080B20829AF34C500492DB6 /* ToDoList+CoreDataClass.swift in Sources */,
 				F04DC3BA29ACF24600AFE6C3 /* SceneDelegate.swift in Sources */,
+				F080B23429AF8C1700492DB6 /* Extension - Color.swift in Sources */,
 				F04DC3C229ACF24600AFE6C3 /* ToDoList.xcdatamodeld in Sources */,
-				F04DC3D529ACF39100AFE6C3 /* ToDoList+CoreDataProperties.swift in Sources */,
+				F080B20929AF34C500492DB6 /* ToDoList+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

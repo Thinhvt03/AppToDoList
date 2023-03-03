@@ -2,12 +2,13 @@
 //  ToDoList+CoreDataProperties.swift
 //  ToDoList
 //
-//  Created by Hoàng Loan on 27/02/2023.
+//  Created by Hoàng Loan on 01/03/2023.
 //
 //
 
 import Foundation
 import CoreData
+import UIKit
 
 
 extension ToDoList {
@@ -18,9 +19,11 @@ extension ToDoList {
 
     @NSManaged public var isDone: Bool
     @NSManaged public var todoname: String?
+    @NSManaged public var index: Int32
+    @NSManaged public var titleColor: String?
 
 }
 
 extension ToDoList : Identifiable {
-
+     
 }
