@@ -108,9 +108,6 @@ class ToDoListViewController: UIViewController {
         guard let todos = fetchResultsController.fetchedObjects else {return}
         if todos.isEmpty && checked == false {
                 editButton.tintColor = .gray
-        } else if action == .editing  {
-            editButton.title = "Done"
-            editButton.action = #selector(editButtonDidTap)
         } else {
             editButton.action = #selector(editButtonDidTap)
         }
@@ -155,7 +152,7 @@ class ToDoListViewController: UIViewController {
         }
         
         action = .none
-        checked.toggle()
+        checked = false
         setupEditButton()
         print(checked)
         
@@ -261,7 +258,7 @@ extension ToDoListViewController: ToDoCellDelegate {
     
     func todoCellBeginEditing(_ cell: ToDoCell) {
         editingIndex = cell.index
-        checked.toggle()
+        checked = true
         setupEditButton()
         guard let todos = fetchResultsController.fetchedObjects else {return}
         action = cell.index == todos.count ? .adding : .editing
@@ -285,6 +282,7 @@ extension ToDoListViewController: ToDoCellDelegate {
             } catch {
                 print("Error Occured: \(error.localizedDescription)")
             }
+            checked = false
             action = .none
             
         } else if let text = cell.textView.text, !text.isEmpty {
@@ -297,9 +295,9 @@ extension ToDoListViewController: ToDoCellDelegate {
                 
             } else {
                 action = .none
+                checked = false
             }
         
-        checked.toggle()
         setupEditButton()
         setupDeleteButton()
     
