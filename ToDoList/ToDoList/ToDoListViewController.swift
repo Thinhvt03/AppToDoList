@@ -20,7 +20,7 @@ class ToDoListViewController: UIViewController {
     
     let reuseIdentifier = "ToDoCell"
     var titleButton = "Edit"
-    var editingIndex: Int = 1
+    var editingIndex: Int = 0
     
     var action: Action = .none {
         didSet {
@@ -137,26 +137,13 @@ class ToDoListViewController: UIViewController {
         
         if action == .adding {
             if let text = cell.textView.text, !text.isEmpty {
-                DataHandler.insertNameOfTask(todoName: text, index: Int32(cell.index) )
-            }
-        } else if action == .editing  {
-            let index = IndexPath(row: editingIndex, section: 0)
-            let todo = fetchResultsController.object(at: index)
-            todo.todoname = cell.textView.text
-            
-            do {
-                try AppDelegate.managedObjectContext.save()
-            } catch {
-                print("Error Occured: \(error.localizedDescription)")
+                DataHandler.insertNameOfTask(todoName: text, index: Int32(editingIndex) )
             }
         }
         
         action = .none
         checked = false
         setupEditButton()
-        print(checked)
-        
-        
     }
     
     // action tap in Edit button
@@ -262,11 +249,13 @@ extension ToDoListViewController: ToDoCellDelegate {
         setupEditButton()
         guard let todos = fetchResultsController.fetchedObjects else {return}
         action = cell.index == todos.count ? .adding : .editing
+
     }
     
     func todoCellDidChangeContent(_ cell: ToDoCell) {
         tableView.beginUpdates()
         tableView.endUpdates()
+       
     }
     
     func todoCellEndEditing(_ cell: ToDoCell) {
@@ -274,14 +263,6 @@ extension ToDoListViewController: ToDoCellDelegate {
         
         if cell.index < todos.count {
             // Edit
-            let index = IndexPath(row: editingIndex, section: 0)
-            let todo = fetchResultsController.object(at: index)
-            todo.todoname = cell.textView.text
-            do {
-                try AppDelegate.managedObjectContext.save()
-            } catch {
-                print("Error Occured: \(error.localizedDescription)")
-            }
             checked = false
             action = .none
             
@@ -358,19 +339,20 @@ extension ToDoListViewController: NSFetchedResultsControllerDelegate {
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         let count = fetchResultsController.fetchedObjects?.count ?? 0
         var array: [Int] = []
-                for i in 0..<count {
-                    array.append(i)
-                }
-                
-                let newElement = array.remove(at: sourceIndexPath.row)
-                array.insert(newElement, at: destinationIndexPath.row)
-                
-                for i in 0..<count {
-                    let task = fetchResultsController.object(at: IndexPath(row: i, section: 0))
-                    
-                    let newPosition = array.firstIndex(of: i)!
-                    task.index = Int32(newPosition)
-                }
+        
+        for i in 0..<count {
+            array.append(i)
+        }
+        
+        let newElement = array.remove(at: sourceIndexPath.row)
+        array.insert(newElement, at: destinationIndexPath.row)
+        
+        for i in 0..<count {
+            let task = fetchResultsController.object(at: IndexPath(row: i, section: 0))
+            
+            let newPosition = array.firstIndex(of: i)!
+            task.index = Int32(newPosition)
+        }
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {

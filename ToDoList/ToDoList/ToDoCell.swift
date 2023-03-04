@@ -26,7 +26,7 @@ class ToDoCell: UITableViewCell {
     }
     
 // MARK: - Properties
-    
+
     var index: Int!
     let leftButton = UIButton()
     let textView = UITextView()
@@ -151,14 +151,31 @@ extension ToDoCell: UITextViewDelegate {
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if !text.isEmpty {
-            delegate.todoCellDidChangeContent(self)  
+            delegate.todoCellDidChangeContent(self)
         }
 
         if text == "\n" {
             delegate.todoCellEndEditing(self)
             return false
         }
+        
         return true
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        let todos = fetchResultsController.fetchedObjects!
+        if index < todos.count {
+            
+            let index = IndexPath(row: index, section: 0)
+            let todo = fetchResultsController.object(at: index)
+            todo.todoname = textView.text
+            
+            do {
+                try AppDelegate.managedObjectContext.save()
+            } catch {
+                print("Error Occured: \(error.localizedDescription)")
+            }
+        }
     }
 }
 
