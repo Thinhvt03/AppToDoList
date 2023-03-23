@@ -52,7 +52,6 @@ extension UIColor {
         guard let components = cgColor.components, components.count >= 3 else {
             return nil
         }
-
         // Helpers
         let r = Float(components[0])
         let g = Float(components[1])
@@ -62,10 +61,8 @@ extension UIColor {
         if components.count >= 4 {
             a = Float(components[3])
         }
-
         // Create Hex String
         let hex = String(format: "%02lX%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255), lroundf(a * 255))
-
         return hex
     }
 }
@@ -73,7 +70,6 @@ extension UIColor {
 // MARK: - Extension ToDoList
 
 extension ToDoList {
-    
     var color: UIColor? {
         get {
             guard let hex = titleColor else { return nil }

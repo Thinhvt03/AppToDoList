@@ -27,12 +27,12 @@ class ToDoCell: UITableViewCell {
     
 // MARK: - Properties
 
-    var index: Int!
-    let leftButton = UIButton()
-    let textView = UITextView()
-    var delegate: ToDoCellDelegate!
+     var index: Int!
+     let leftButton = UIButton()
+     let textView = UITextView()
+     var delegate: ToDoCellDelegate!
     
-    var style: ToDoCellStyle = .todo {
+    public var style: ToDoCellStyle = .todo {
         didSet {
             switch style {
             case .add:
@@ -45,34 +45,28 @@ class ToDoCell: UITableViewCell {
         }
     }
     
-    var isDone: Bool = false {
+    public var isDone: Bool = false {
         didSet {
             let image = isDone ? systemImage("checkmark.square") : systemImage("square")
             leftButton.setImage(image, for: .normal)
-            updateChecked()
-            
-            guard let todos = fetchResultsController.fetchedObjects else {return}
-            if index < todos.count {
-                textView.isEditable = isDone ? false : true
-            } else {
-                textView.isEditable = true
-            }
+            textView.isEditable = isDone ? false : true
+            addAttributesToTextView()
         }
     }
     
-    // Attribued strikethroughStyle for textView
-    private func updateChecked() {
+    // Add Attribued strikethroughStyle for textView
+    private func addAttributesToTextView() {
         let attributedText = NSMutableAttributedString(string: textView.text!)
         if isDone {
             attributedText.addAttributes([
                                 .strikethroughStyle: NSUnderlineStyle.single.rawValue,
                                 .strikethroughColor: UIColor.gray,
-                                .font : UIFont.systemFont(ofSize: 20.0),
+                                .font : UIFont.systemFont(ofSize: 20, weight: .medium),
                                 .foregroundColor : UIColor.gray,
                             ],  range: NSMakeRange(0, attributedText.length))
         } else {
             attributedText.addAttributes([
-                               .font : UIFont.systemFont(ofSize: 20.0),
+                .font : UIFont.systemFont(ofSize: 20, weight: .medium),
                             ], range: NSMakeRange(0, attributedText.length))
         }
         textView.attributedText = attributedText
@@ -89,7 +83,7 @@ class ToDoCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-// MARK: - Setup Gesture and Views
+    // MARK: - Setup Gesture and Views
         
     private func setupGesture() {
         let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeRight))
@@ -116,7 +110,7 @@ class ToDoCell: UITableViewCell {
         leftButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         
         // Setup constrains using VFL
-        let views = ["leftButton": leftButton, "textView": textView]
+        let views: [String: Any] = ["leftButton": leftButton, "textView": textView]
         let metrics = ["leftButtonSize": NSNumber(36), "margin": NSNumber(8)]
         // Horizontal
         let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|-[leftButton(leftButtonSize)]-[textView]-|", metrics: metrics, views: views)
@@ -138,8 +132,8 @@ class ToDoCell: UITableViewCell {
     }
         
     @objc private func swipeRight() {
-            delegate.todoCellDidSwipeRight(self)
-        }
+        delegate.todoCellDidSwipeRight(self)
+    }
 }
 
 //MARK: - TextView Delegate
@@ -153,29 +147,15 @@ extension ToDoCell: UITextViewDelegate {
         if !text.isEmpty {
             delegate.todoCellDidChangeContent(self)
         }
-
         if text == "\n" {
             delegate.todoCellEndEditing(self)
             return false
         }
-        
         return true
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-        let todos = fetchResultsController.fetchedObjects!
-        if index < todos.count {
-            
-            let index = IndexPath(row: index, section: 0)
-            let todo = fetchResultsController.object(at: index)
-            todo.todoname = textView.text
-            
-            do {
-                try AppDelegate.managedObjectContext.save()
-            } catch {
-                print("Error Occured: \(error.localizedDescription)")
-            }
-        }
+        delegate.todoCellEndEditing(self)
     }
 }
 
