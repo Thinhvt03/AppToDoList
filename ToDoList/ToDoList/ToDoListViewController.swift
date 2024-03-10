@@ -78,13 +78,13 @@ class ToDoListViewController: UIViewController {
         
         override func viewDidLoad() {
             super.viewDidLoad()
-
-            setupTableView()
             initFetchResultsController()
             fetchResultsController.delegate = self
+            setupTableView()
             setupEditButton()
             setupDeleteButton()
             startAvoidingKeyboard()
+            
         }
         
     // MARK: - Methods
